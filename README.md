@@ -1,4 +1,4 @@
-# MI--
+# MI-- 电子购买商城
 基于MongoDB + node.js + VUE 制作的网上商城
 
 server 为node.js服务器的expres
