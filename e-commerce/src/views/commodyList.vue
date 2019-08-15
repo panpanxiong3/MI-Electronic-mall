@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Nav-header></Nav-header>
     <list-heard></list-heard>
     <list-bread>
       <span slot='bread'>List</span>
@@ -64,6 +65,7 @@
   import listHeard from '@/components/hearder';
   import listFooter from '@/components/footer';
   import listBread from '@/components/bread';
+  import NavHeader from "@/components/NavHeader";
   import axios from 'axios'
   export default {
     data() {
@@ -96,6 +98,7 @@
       listHeard,
       listFooter,
       listBread,
+      NavHeader
     },
     methods: {
       showFilterTop() {
