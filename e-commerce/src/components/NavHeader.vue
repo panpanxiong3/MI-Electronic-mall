@@ -28,11 +28,11 @@
             </div>
             <div class="navbar-right-container" style="display: flex;">
               <div class="navbar-menu-container">
-                <span class="navbar-link" v-text="nickName" v-if="nickName"></span>
-                <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName">Login</a>
-                <a href="javascript:void(0)" class="navbar-link" @click="logOut" v-else>Logout</a>
+                <span class="navbar-link"  >{{userName}}</span>
+                <a href="javascript:void(0)" class="navbar-link" v-if="hasLogin" @click="loginModalFlag=true">Login</a>
+                <a href="javascript:void(0)" class="navbar-link" v-else  @click="loginOut">Logout</a>
                 <div class="navbar-cart-container">
-                  <span class="navbar-cart-count" v-text="cartCount" v-if="cartCount"></span>
+                  <span class="navbar-cart-count" ></span>
                   <a class="navbar-link navbar-cart-link" href="/#/cart">
                     <svg class="navbar-cart-logo">
                       <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -42,7 +42,7 @@
               </div>
             </div>
         </div>
-        <div class="md-modal modal-msg md-modal-transition md-show" >
+        <div class="md-modal modal-msg md-modal-transition " :class="{'md-show':loginModalFlag}">
           <div class="md-modal-inner">
             <div class="md-top">
               <div class="md-title">Login in</div>
@@ -60,7 +60,7 @@
                   </li>
                   <li class="regi_form_input noMargin">
                     <i class="icon IconPwd"></i>
-                    <input type="password" tabindex="2"  name="password" v-model="userPwd" class="regi_login_input regi_login_input_left login-input-no input_text" placeholder="Password" @keyup.enter="login">
+                    <input type="password" tabindex="2"  name="password"  v-model="userPwd" class="regi_login_input regi_login_input_left login-input-no input_text" placeholder="Password" @keyup.enter="login">
                   </li>
                 </ul>
               </div>
@@ -70,7 +70,7 @@
             </div>
           </div>
         </div>
-        <div class="md-overlay" v-if="loginModalFlag" @click="loginModalFlag=false"></div>
+        <div class="md-overlay" v-show="loginModalFlag" @click="loginModalFlag=false"></div>
     </header>
 </template>
 <style>
@@ -146,12 +146,58 @@
 </style>
 <script>
     import './../assets/login.css'
-
+    import axios  from  'axios';
     export default{
         data(){
             return{
-
+                userName : '',//用户名
+                userPwd : '', //密码
+                errorTip:false, //是否密码用户正确
+                loginModalFlag:false, //判断弹出登录框
+                hasLogin:true, //是否切换登出按钮
             }
         },
+        methods:{
+            login(){
+                let  userName = this.userName;
+                let  userPwd = this.userPwd;
+                if(userName == '' || userPwd == ''){
+                    this.errorTip = true;
+                }
+                axios.post('/users/login',{
+                    userName: userName,
+                    userPwd: userPwd
+                }).then((resData)=>{
+                    let data = resData.data;
+                    if(data.status == '0'){
+                        this.loginModalFlag = false; //隐藏弹出框
+                        this.userName = data.result.userName;  //设置页面的用户名
+                        this.hasLogin = false; //设置logou显示
+                    }else {
+                        this.errorTip =true;
+                    }
+                })
+            },
+            loginOut(){
+                axios.post('/users/loginout').then((resData)=>{
+                     if(resData){
+                         let data = resData.data;
+                         this.userName = data.result;
+                         this.hasLogin = true;
+                     }else {
+                         return;
+                     }
+
+
+                });
+            }
+        },
+        created() {
+            let hasUserName = this.$cookie.get('userName');
+            if(hasUserName){
+                this.userName = hasUserName;
+                this.hasLogin = false;
+            }
+        }
     }
 </script>

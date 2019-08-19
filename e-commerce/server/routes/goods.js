@@ -16,7 +16,7 @@ mongoose.connection.on('disconnected',function (params) {
     console.log('MongoDB disconnected');
 });
 
-router.get("/",function (req,res,next) {
+router.get("/list",function (req,res,next) {
     let page = parseInt(req.param('page'));
     let pageSize = parseInt(req.param('pageSize'));
     let priceLeave = req.param('priceLeave');
@@ -27,10 +27,10 @@ router.get("/",function (req,res,next) {
     let priceMin = '';
     if (priceLeave != 'all'){
         switch (priceLeave) {
-            case '0':priceMin=0;priceMax=100;break;
-            case '1':priceMin=100;priceMax=500;break;
-            case '2':priceMin=500;priceMax=1000;break;
-            case '3':priceMin=1000;priceMax=5000;break;
+            case '0':priceMin=0;priceMax=500;break;
+            case '1':priceMin=500;priceMax=1000;break;
+            case '2':priceMin=1000;priceMax=5000;break;
+
         }
         params = {
             salePrice:{
@@ -56,13 +56,13 @@ router.get("/",function (req,res,next) {
                   list:doc
               }
           })
-      }  
+      }
     })
 });
 
 router.post('/addCart',(req,res,next)=>{
-       var  userId = '100000077',productId = req.body.productId;
-       var  User = require('../models/user');
+       let  userId = req.cookies.userId,productId = req.body.productId;
+       let  User = require('../models/user');
        User.findOne({userId:userId},(err1,userDoc)=>{
            if(err1){
                res.json({

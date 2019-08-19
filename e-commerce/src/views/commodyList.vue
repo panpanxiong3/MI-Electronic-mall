@@ -1,10 +1,7 @@
 <template>
   <div id="app">
     <Nav-header></Nav-header>
-    <list-heard></list-heard>
-    <list-bread>
-      <span slot='bread'>List</span>
-    </list-bread>
+
     <div class="accessory-result-page accessory-page">
       <div class="container">
         <div class="filter-nav">
@@ -55,7 +52,14 @@
       </div>
     </div>
     <div class='md-overlay' v-show="overShow" @click="clickTop"></div>
-    <list-footer></list-footer>
+    <list-footer ></list-footer>
+    <model :mdshow='showModel' @close="closeModel">
+        <p slot="modelName">{{modelTitle}}</p>
+        <div slot="colseModel">
+          <a href="javascript:;" class="btn btn--m" @click="closeModel">继续购物</a>
+          <router-link href="javascript:;" class="btn btn--m" to="/cart">查看购物车</router-link>
+        </div>
+    </model>
   </div>
 </template>
 <script>
@@ -66,6 +70,7 @@
   import listFooter from '@/components/footer';
   import listBread from '@/components/bread';
   import NavHeader from "@/components/NavHeader";
+  import Model from '@/components/model';
   import axios from 'axios'
   export default {
     data() {
@@ -73,32 +78,35 @@
         goodsList: [],
         priceFilter: [{
             startPrice: '0.00',
-            endPrice: '300.00'
-          },
-          {
-            startPrice: '300.00',
             endPrice: '500.00'
           },
           {
             startPrice: '500.00',
             endPrice: '1000.00'
           },
+          {
+            startPrice: '1000.00',
+            endPrice: '5000.00'
+          },
         ],
         priceCheck: 'all',
         filterBy: false,
         overShow: false,
         priceSort: true,
+        showModel:false,
         loading:false, // 加載的圖片是否顯示
         busy:true,
         page: 1,
         pageSize: 8,
+        modelTitle:''
       }
     },
     components: {
       listHeard,
       listFooter,
       listBread,
-      NavHeader
+      NavHeader,
+      Model
     },
     methods: {
       showFilterTop() {
@@ -143,7 +151,7 @@
           priceLeave :this.priceCheck
         };
         this.loading = true; //顯示加載圖片
-        axios.get('/goods', {
+        axios.get('/goods/list', {
           params: param
         }).then((response) => {
           let res = response.data;
@@ -170,12 +178,18 @@
           axios.post('/goods/addCart',{
               productId:id
           }).then((res) => {
-              if(res.data.status == 0){
-                  alert('加入成功');
+              if(res.data.status == '0'){
+                  this.modelTitle = '加入成功';
+                  this.showModel = true
               }else {
-                  alert(res.msg);
+                  this.modelTitle =res.data.msg;
+                  this.showModel = true;
+                  // confirm(res.data.msg);
               }
           })
+      },
+      closeModel(){
+          this.showModel =false;
       }
     },
     mounted() {

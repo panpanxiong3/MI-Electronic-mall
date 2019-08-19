@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 import vueLazyLoad from 'vue-lazyload';
 import infiniteScroll from 'vue-infinite-scroll';
+import  VueCookie from 'vue-cookie';
+// Tell Vue to use the plugin
+Vue.use(VueCookie);
 Vue.config.productionTip = false
 Vue.use(infiniteScroll);
 Vue.use(vueLazyLoad,{

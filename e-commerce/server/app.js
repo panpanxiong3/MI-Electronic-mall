@@ -20,9 +20,30 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 登录拦截，用户不登录时，拦截操作
+app.use(function (req,res,next) {
+  let userName = req.cookies.userName;
+  if(userName){
+    next();
+  }else {
+    let originalUrl = req.originalUrl;
+    if(originalUrl == '/users/login' || originalUrl == '/users/loginout' || req.path == '/goods/list'){
+      next();
+    }else {
+      res.json({
+        status:'1',
+        msg:'当前未登录',
+        result:''
+      })
+    }
+  }
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/goods',goodsRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -39,5 +60,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

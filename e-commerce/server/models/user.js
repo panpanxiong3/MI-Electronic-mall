@@ -10,7 +10,7 @@ const UsersSchema = new mongoose.Schema({
            "productName":String,
            "salePrice":Number,
            "productImage":String,
-           'productNum':String,
+           'productNum':Number,
            'checked':String
        }
    ],
