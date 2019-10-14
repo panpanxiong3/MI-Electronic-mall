@@ -23,8 +23,7 @@ router.get("/list",function (req,res,next) {
     let sortNum = parseInt(req.param('sort'));
     let skip = (page - 1) * pageSize;
     let params = {};
-    let priceMax = '';
-    let priceMin = '';
+    let priceMax = '' ,priceMin = '';
     if (priceLeave != 'all'){
         switch (priceLeave) {
             case '0':priceMin=0;priceMax=500;break;
@@ -39,6 +38,7 @@ router.get("/list",function (req,res,next) {
             }
         }
     }
+    console.log(params);
     let goodModel = Goods.find(params).skip(skip).limit(pageSize);
     goodModel.sort({"salePrice": sortNum});
     goodModel.exec(function (err,doc) {

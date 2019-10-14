@@ -77,7 +77,7 @@ router.post('/cartList',(req,res,next)=>{
      })
   }
 });
-
+//删除产品
 router.post('/delList',(req,res,next)=>{
   let userId = req.cookies.userId;
   let cartId = req.body.cartId;
@@ -104,5 +104,29 @@ router.post('/delList',(req,res,next)=>{
   })
 });
 
-
+//修改产品属性
+  router.post('/eaitList',(req,res,next)=>{
+  let userId = req.cookies.userId;
+  let productNum = req.body.productNum;
+  let productId = req.body.productId;
+  let checked = req.body.checked;
+  User.update({'userId':userId,'cartList.productId':productId},{
+    'cartList.$.productNum' : productNum,
+    'cartList.$.checked' : checked
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:'error',
+        result:''
+      })
+    }else {
+      res.json({
+        status:'0',
+        msg:'success',
+        result:'suc'
+      })
+    }
+  })
+});
 module.exports = router;

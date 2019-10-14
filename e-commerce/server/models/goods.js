@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 var produtSchema = new Schema({
     "productId":String,
     "productName":String,
-    "salePrice":String,
+    "salePrice":Number,
     "productImage":String,
     "productNum":Number,
     "checked":String

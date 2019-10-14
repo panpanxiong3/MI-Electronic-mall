@@ -125,7 +125,7 @@
         };
         this.clickTop();//
         this.page = 1;
-        this.getGoodList();//請求接口
+        this.getGoodList(false);//請求接口
       },
       SetSort() {
         this.priceSort = !this.priceSort;
@@ -168,7 +168,6 @@
               this.goodsList = res.result.list;
               this.busy = false;
             }
-
           } else {
             this.goodsList = [];
           }
