@@ -129,4 +129,41 @@ router.post('/delList',(req,res,next)=>{
     }
   })
 });
+
+
+//  全选
+ router.post('/priceAll',(req,res,next)=>{
+   let userId = req.cookies.userId;
+   let checkedAll = req.body.checked?'1':'0';
+   User.findOne({'userId':userId},(err,user)=>{
+     if(err){
+       res.json({
+         status:'1',
+         msg:err.measure,
+         result:''
+       })
+     }else{
+       if(user){
+         user.cartList.forEach((item)=>{
+           item.checked = checkedAll;
+         });
+         user.save((err1,doc1)=>{
+           if(err1){
+             res.json({
+               status:'2',
+               msg:err.measure,
+               result:''
+             })
+           }else {
+             res.json({
+               status:'0',
+               msg:'suc',
+               result:doc1
+             })
+           }
+         })
+       }
+     }
+   })
+ });
 module.exports = router;

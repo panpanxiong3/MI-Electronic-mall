@@ -83,7 +83,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-2">
-                  <div class="item-price">{{carts.salePrice}}</div>
+                  <div class="item-price">{{carts.salePrice | currency('￥')}}</div>
                 </div>
                 <div class="cart-tab-3">
                   <div class="item-quantity">
@@ -97,7 +97,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-4">
-                  <div class="item-price-total">{{carts.salePrice * carts.productNum}}</div>
+                  <div class="item-price-total">{{(carts.salePrice * carts.productNum) | currency('￥') }}</div>
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
@@ -116,8 +116,8 @@
           <div class="cart-foot-inner">
             <div class="cart-foot-l">
               <div class="item-all-check">
-                <a href="javascipt:;">
-                  <span class="checkbox-btn item-check-btn">
+                <a href="javascipt:;"  @click="priceClickALL">
+                  <span class="checkbox-btn item-check-btn"  :class="{'check': priceClickFlag}">
                       <svg class="icon icon-ok"><use xlink:href="#icon-ok"/></svg>
                   </span>
                   <span>Select all</span>
@@ -126,10 +126,10 @@
             </div>
             <div class="cart-foot-r">
               <div class="item-total">
-                Item total: <span class="total-price">500</span>
+                Item total: <span class="total-price">{{priceClickMoney | currency('￥')}}</span>
               </div>
               <div class="btn-wrap">
-                <a class="btn btn--red">Checkout</a>
+                <a class="btn btn--red" :class="{'btn--dis':checkCount == '0'}" @click="checkOut">Checkout</a>
               </div>
             </div>
           </div>
@@ -183,7 +183,30 @@
             return{
                 cartList:[],
                 showModel:false,
-                productId: ''
+                productId: '',
+            }
+        },
+        computed:{
+            priceClickFlag(){
+              return this.checkCount == this.cartList.length
+            },
+            checkCount(){
+                let  i =0;
+                this.cartList.forEach((item)=>{
+                    if(item.checked === '1'){
+                        i++;
+                    }
+                });
+                return i;
+            },
+            priceClickMoney(){
+              let monney = 0;
+              this.cartList.forEach((item)=>{
+                  if(item.checked === '1'){
+                      monney += parseFloat(item.salePrice) * parseInt(item.productNum);
+                  }
+              });
+              return monney;
             }
         },
         methods:{
@@ -229,6 +252,28 @@
                 }).then((respron)=>{
                     let data = respron.data;
                 })
+            },
+
+        //    全选商品
+            priceClickALL(){
+                let fools = !this.priceClickFlag;
+                this.cartList.forEach((item)=>{
+                    item.checked = fools?'1':'0'
+                });
+                axios.post('/users/priceAll',{
+                    'checked':fools
+                }).then((respron)=>{
+                    let data = respron.data;
+                })
+            },
+
+        //    跳转选择页面
+            checkOut(){
+                if(this.checkCount != '0'){
+                    this.$router.push({
+                        path:'/address'
+                    });
+                }
             }
         },
         mounted() {

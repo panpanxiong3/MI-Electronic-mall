@@ -6,6 +6,8 @@ import router from './router'
 import vueLazyLoad from 'vue-lazyload';
 import infiniteScroll from 'vue-infinite-scroll';
 import  VueCookie from 'vue-cookie';
+import  {currency} from "./util/currency";
+
 // Tell Vue to use the plugin
 Vue.use(VueCookie);
 Vue.config.productionTip = false
@@ -13,6 +15,8 @@ Vue.use(infiniteScroll);
 Vue.use(vueLazyLoad,{
   loading:'/static/loading-svg/loading-balls.svg'
 });
+
+Vue.filter("currency",currency);
 
 /* eslint-disable no-new */
 new Vue({
