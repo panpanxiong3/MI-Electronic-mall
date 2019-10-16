@@ -166,4 +166,93 @@ router.post('/delList',(req,res,next)=>{
      }
    })
  });
+
+
+// 获取地址信息
+router.get('/address',(req,res,next)=>{
+  let userId = req.cookies.userId;
+  User.findOne({'userId':userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:'error'
+      })
+    }else {
+      res.json({
+        status:'0',
+        msg:'',
+        result:doc.addressList
+      })
+    }
+  })
+});
+
+//设置默认地址
+router.post('/setDefault',(req,res,next)=>{
+   let  userId = req.cookies.userId;
+   let  addressId = req.body.addressId;
+   User.findOne({'userId':userId},(err,doc)=>{
+     if(err){
+       res.json({
+         status:'1',
+         msg:err.message,
+         result:'error'
+       })
+     }else {
+       if(doc){
+         doc.addressList.forEach((items)=>{
+           if(items.addressId == addressId){
+             items.isDefault = true;
+           }else {
+             items.isDefault = false;
+           }
+         });
+         doc.save((err1,doc1)=>{
+           if(err1){
+             res.json({
+               status:'2',
+               msg:err.message,
+               result:'error'
+             })
+           }else {
+             res.json({
+               status:'0',
+               msg:'',
+               result:'success'
+             })
+           }
+         })
+       }
+     }
+   })
+});
+
+
+//删除地址
+router.post('/delAddress',(req,res,next)=>{
+   let userId = req.cookies.userId,
+     addressId = req.body.addressId
+  User.update({
+    'userId':userId
+  },{
+    $pull:{
+      'addressList':{
+        'addressId':addressId
+      }
+    }
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.message,
+        result:'error'
+      })
+    }else {
+      res.json({
+
+      })
+    }
+  })
+});
 module.exports = router;

@@ -65,37 +65,21 @@
           <div class="addr-list-wrap">
             <div class="addr-list">
               <ul>
-                <li>
+                <li v-for="(items,index) in addressListFit" :class="{'check':index==checkIndex}" @click="changIndex(index,items.addressId)">
                   <dl>
-                    <dt>Jack</dt>
-                    <dd class="address">海淀区朝阳公园</dd>
-                    <dd class="tel">18610000000</dd>
+                    <dt>{{items.userName}}</dt>
+                    <dd class="address">{{items.streetName}}</dd>
+                    <dd class="tel">{{items.postCode}}</dd>
                   </dl>
                   <div class="addr-opration addr-del">
-                    <a href="javascript:;" class="addr-del-btn">
+                    <a href="javascript:;" class="addr-del-btn" @click="delAddressConfirm(items.addressId)">
                       <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
                     </a>
                   </div>
                   <div class="addr-opration addr-set-default">
-                    <a href="javascript:;" class="addr-set-default-btn"><i>Set default</i></a>
+                    <a href="javascript:;" class="addr-set-default-btn" v-if="!items.isDefault" @click="setDefault(items.addressId)"><i>Set default</i></a>
                   </div>
-                  <div class="addr-opration addr-default">Default address</div>
-                </li>
-                <li>
-                  <dl>
-                    <dt>Tom</dt>
-                    <dd class="address">海淀区中关村</dd>
-                    <dd class="tel">18510000000</dd>
-                  </dl>
-                  <div class="addr-opration addr-del">
-                    <a href="javascript:;" class="addr-del-btn">
-                      <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
-                    </a>
-                  </div>
-                  <div class="addr-opration addr-set-default">
-                    <a href="javascript:;" class="addr-set-default-btn"><i>Set default</i></a>
-                  </div>
-                  <div class="addr-opration addr-default">Default address</div>
+                  <div class="addr-opration addr-default" v-if="items.isDefault">Default address</div>
                 </li>
                 <li class="addr-new">
                   <div class="add-new-inner">
@@ -108,11 +92,11 @@
               </ul>
             </div>
 
-            <div class="shipping-addr-more">
-              <a class="addr-more-btn up-down-btn" href="javascript:;">
+            <div class="shipping-addr-more ">
+              <a class="addr-more-btn up-down-btn " href="javascript:;" @click="moreAddress" :class="{'open':limit>3}">
                 more
-                <i class="i-up-down">
-                  <i class="i-up-down-l"></i>
+                <i class="i-up-down" >
+                  <i class="i-up-down-l "></i>
                   <i class="i-up-down-r"></i>
                 </i>
               </a>
@@ -137,12 +121,19 @@
             </div>
           </div>
           <div class="next-btn-wrap">
-            <a class="btn btn--m btn--red" href="#">Next</a>
+            <a class="btn btn--m btn--red" href="javascript:;" @click="checkOut">Next</a>
           </div>
         </div>
       </div>
     </div>
     <list-footer></list-footer>
+    <model :mdshow="isMdShow" @close="closeModel">
+      <p slot="modelName">是否确认删除呢?</p>
+      <div slot="colseModel">
+        <a href="javascript:;" class="btn btn--m" @click="delAddress">删除</a>
+        <a href="javascript:;" class="btn btn--m" @click="isMdShow=false">取消</a>
+      </div>
+    </model>
   </div>
 </template>
 <style>
@@ -155,13 +146,78 @@
     export default{
         data(){
             return{
-
+                addressList:[],
+                limit:3,
+                checkIndex:0, //默认选中地址
+                isMdShow:false, //是否模态框,
+                addressId :'', // 删除的id值
+                createListId:'' //传递订单页面的id值
             }
         },
         components:{
             NavHeader,
             listFooter,
             Model
+        },
+        computed:{
+          addressListFit(){
+             return  this.addressList.slice(0,this.limit);
+          }
+        },
+        methods:{
+            init(){
+                axios.get('/users/address').then((respron)=>{
+                    this.addressList = respron.data.result;
+                    this.addressList.forEach((item,index)=>{
+                        if(item.isDefault){
+                            this.checkIndex = index;
+                            this.createListId = item.addressId;
+                        }
+                    })
+                })
+            },
+            moreAddress(){
+                if(this.limit == 3){
+                    this.limit = this.addressList.length;
+                }else {
+                    this.limit = 3;
+                }
+            },
+            changIndex(index,addressID){
+                this.checkIndex = index;
+                this.createListId = addressID;
+            },
+            setDefault(addressId){
+                axios.post('/users/setDefault',{
+                    'addressId':addressId
+                }).then((respron)=>{
+                    this.init();
+                })
+            },
+            closeModel() {
+                this.isMdShow = false
+            },
+            delAddressConfirm(addressID){
+                this.addressId = addressID;
+                this.isMdShow = true;
+            },
+            delAddress(){
+               axios.post('/users/delAddress',{
+                   'addressId':this.addressId
+               }).then((respron)=>{
+                   this.isMdShow = false;
+                   this.init();
+               })
+            },
+            checkOut(){
+                this.$router.push({
+                    path:'/orderConfirm',
+                    query:{'addressId': this.createListId}
+                })
+            }
+        },
+        mounted() {
+            this.init();
         }
     }
 </script>
