@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('./../models/user');
+require('../util/util');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
@@ -251,6 +252,100 @@ router.post('/delAddress',(req,res,next)=>{
     }else {
       res.json({
 
+      })
+    }
+  })
+});
+
+//生成订单信息
+router.post('/createOrder',(req,res,next)=>{
+  let userId = req.cookies.userId;
+  let orderTotal = req.body.orderTotal;
+  let addressId = req.cookies.address;
+
+  User.findOne({'userId':userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status:'0',
+        msg:err.message,
+        result:'error'
+      })
+    }else {
+      let address = '';
+      let goodsList = [];
+      doc.addressList.forEach((item)=>{
+        if(item.addressId == addressId){
+          address = item;
+        }
+      });
+
+      doc.cartList.forEach((item)=>{
+        if(item.checked == '1'){
+           goodsList.push(item);
+        }
+      });
+      let ord = '662';
+      let r1 = Math.floor(Math.random() * 10);
+      let r2 = Math.floor(Math.random() * 10);
+      let creatNum = new Date().Format('yyyyMMddhhmmss');
+      let creatDate = new Date().Format('yyyy-MM-dd hh:mm:ss');
+      let order = {
+        orderId:ord + r1 + creatNum + r2,
+        orderTotal:orderTotal,
+        addressInfo:address,
+        goodsList:goodsList,
+        orderStatus:'1',
+        createDate:creatDate,
+      };
+
+      doc.orderList.push(order);
+      doc.save((err1,doc1)=>{
+        if(err1){
+          res.json({
+            status:'2',
+            msg:err1.messages,
+            result:'error'
+          })
+        }else {
+          res.json({
+            status:'0',
+            msg:'',
+            result:{
+              orderId:order.orderId,
+              orderTotal:order.orderTotal
+            }
+          })
+        }
+      })
+    }
+  });
+});
+
+//订单成功页面
+router.get('/orderList',(req,res,next)=>{
+  let userId = req.cookies.userId,
+      orderId = req.query.orderId;
+  User.findOne({'userId':userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.messages,
+        result:'error'
+      })
+    }else {
+      let orderTotal = 0;
+      doc.orderList.forEach((item)=>{
+        if(item.orderId === orderId){
+            orderTotal = item.orderTotal;
+        }
+      });
+      res.json({
+        status:'0',
+        msg:'',
+        result:{
+          orderTotal:orderTotal,
+          orderId:orderId
+        }
       })
     }
   })

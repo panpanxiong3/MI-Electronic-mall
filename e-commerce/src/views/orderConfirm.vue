@@ -120,10 +120,10 @@
 
                     <div class="order-foot-wrap">
                         <div class="prev-btn-wrap">
-                            <button class="btn btn--m">Previous</button>
+                           <router-link class="btn btn--m" to="/address">Previous</router-link>
                         </div>
                         <div class="next-btn-wrap">
-                            <button class="btn btn--m btn--red">Proceed to payment</button>
+                            <button class="btn btn--m btn--red" @click="orderPayment">Proceed to payment</button>
                         </div>
                     </div>
                 </div>
@@ -171,6 +171,17 @@
             init(){
                 axios.post('/users/cartList').then((respron)=>{
                     this.orderList = respron.data.result;
+                })
+            },
+            orderPayment(){
+                axios.post('/users/createOrder',{
+                    'orderTotal':this.AllPriceSub,
+                    'addressId':this.$route.query.addressId
+                }).then((respron)=>{
+                    let orderId = respron.data.result.orderId;
+                    this.$router.push({
+                        path:'/orderSuccess?orderId='+ orderId,
+                    })
                 })
             }
         },
