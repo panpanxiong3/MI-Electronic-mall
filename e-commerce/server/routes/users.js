@@ -57,7 +57,7 @@ router.post('/loginout',(req,res,next)=>{
     })
 });
 
-
+//获取购物车信息
 router.post('/cartList',(req,res,next)=>{
   let cookieId = req.cookies.userId;
   if(cookieId){
@@ -77,6 +77,32 @@ router.post('/cartList',(req,res,next)=>{
         }
      })
   }
+});
+
+//获取产品数量
+router.get('/cartNums',(req,res,next)=>{
+  let userId = req.cookies.userId;
+  User.findOne({'userId':userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status:'1',
+        msg:err.messages,
+        result:'error'
+      })
+    }else {
+      let nums = 0;
+      doc.cartList.map((emit)=>{
+        if(emit.checked == '1'){
+          nums += emit.productNum;
+        }
+      });
+      res.json({
+        status:'0',
+        msg:'suc',
+        result:nums
+      })
+    }
+  })
 });
 //删除产品
 router.post('/delList',(req,res,next)=>{

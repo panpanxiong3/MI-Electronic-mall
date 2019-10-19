@@ -1,7 +1,7 @@
 <template>
 
   <div>
-    <nav-header></nav-header>
+    <nav-header @getDate="getList" @outDate="getList"></nav-header>
     <div class="nav-breadcrumb-wrap">
       <div class="container">
         <nav class="nav-breadcrumb">
@@ -212,8 +212,10 @@
         methods:{
             getList(){
                 axios.post('/users/cartList').then((json)=>{
-                    let res = json.data;
-                    this.cartList = res.result;
+                    if (json.data){
+                        let res = json.data;
+                        this.cartList = res.result;
+                    }
                 })
             },
             //关闭模态框
@@ -236,15 +238,30 @@
             editCart(ement,item){
                 if(ement == 'add'){
                     item.productNum ++;
+                    if(item.checked == '1'){
+                        this.$store.commit('setListCounty',1);
+                    }
+
                 }else if(ement == 'exit'){
                     if(item.productNum <= 1){
                         return
                     }
                     item.productNum --;
+                    if(item.checked == '1'){
+                        this.$store.commit('setListCounty',-1);
+                    }
                 }else if(ement == 'isCheck'){
-                    item.checked = item.checked == '1'?'0':'1'
+                    let nums = 0;
+                    if(item.checked == '1'){
+                        item.checked = '0';
+                        nums -= item.productNum;
+                        this.$store.commit('setListCounty',nums);
+                    }else {
+                        item.checked = '1';
+                        nums += item.productNum;
+                        this.$store.commit('setListCounty',nums);
+                    }
                 }
-                console.log(item.checked);
                 axios.post('/users/eaitList',{
                     'productId':item.productId,
                     'productNum': item.productNum,

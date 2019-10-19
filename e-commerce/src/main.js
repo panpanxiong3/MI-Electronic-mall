@@ -7,9 +7,10 @@ import vueLazyLoad from 'vue-lazyload';
 import infiniteScroll from 'vue-infinite-scroll';
 import  VueCookie from 'vue-cookie';
 import  {currency} from "./util/currency";
-
+import Vuex from 'vuex';
 // Tell Vue to use the plugin
 Vue.use(VueCookie);
+Vue.use(Vuex);
 Vue.config.productionTip = false
 Vue.use(infiniteScroll);
 Vue.use(vueLazyLoad,{
@@ -18,10 +19,29 @@ Vue.use(vueLazyLoad,{
 
 Vue.filter("currency",currency);
 
+const store = new Vuex.Store({
+  state:{
+    userCount:'',
+    listsCounty:0
+  },
+  mutations:{
+    changUserCount(state,name){
+      state.userCount = name;
+    },
+    setListCounty(state,num){
+      state.listsCounty += num;
+    },
+    initListCounty(state,num){
+      state.listsCounty = num;
+    }
+  }
+});
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
-})
+});

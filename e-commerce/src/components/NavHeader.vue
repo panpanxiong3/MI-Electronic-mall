@@ -28,11 +28,11 @@
             </div>
             <div class="navbar-right-container" style="display: flex;">
               <div class="navbar-menu-container">
-                <span class="navbar-link"  >{{userName}}</span>
+                <span class="navbar-link"  >{{likeName}}</span>
                 <a href="javascript:void(0)" class="navbar-link" v-if="hasLogin" @click="loginModalFlag=true">Login</a>
                 <a href="javascript:void(0)" class="navbar-link" v-else  @click="loginOut">Logout</a>
                 <div class="navbar-cart-container">
-                  <span class="navbar-cart-count" ></span>
+                  <span class="navbar-cart-count" v-if="likeNums > 0">{{likeNums}}</span>
                   <a class="navbar-link navbar-cart-link" href="/#/cart">
                     <svg class="navbar-cart-logo">
                       <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -147,6 +147,7 @@
 <script>
     import './../assets/login.css'
     import axios  from  'axios';
+    import {mapState} from 'vuex';
     export default{
         data(){
             return{
@@ -155,6 +156,15 @@
                 errorTip:false, //是否密码用户正确
                 loginModalFlag:false, //判断弹出登录框
                 hasLogin:true, //是否切换登出按钮
+            }
+        },
+        computed:{
+            // ...mapState(['likeName','likeNums'])
+            likeName(){
+                return  this.$store.state.userCount;
+            },
+            likeNums(){
+                return this.$store.state.listsCounty;
             }
         },
         methods:{
@@ -171,7 +181,10 @@
                     let data = resData.data;
                     if(data.status == '0'){
                         this.loginModalFlag = false; //隐藏弹出框
-                        this.userName = data.result.userName;  //设置页面的用户名
+                        // this.userName = data.result.userName;  //设置页面的用户名
+                        this.likeName = this.$store.commit('changUserCount',data.result.userName);
+                        this.getNums(); //设置显示数量
+                        this.$emit('getDate'); //登入自动获取数据
                         this.hasLogin = false; //设置logou显示
                     }else {
                         this.errorTip =true;
@@ -183,6 +196,8 @@
                      if(resData){
                          let data = resData.data;
                          this.userName = data.result;
+                         this.likeName = this.$store.commit('changUserCount',this.userName);
+                         this.$store.commit('initListCounty',0);
                          this.hasLogin = true;
                      }else {
                          return;
@@ -190,13 +205,25 @@
 
 
                 });
+            },
+            getNums(){
+                axios.get('/users/cartNums').then((respron)=>{
+                    if (respron.data.status == '0'){
+                        let num = respron.data.result;
+                        this.$store.commit('initListCounty',num);
+                    }
+                })
             }
         },
         created() {
             let hasUserName = this.$cookie.get('userName');
             if(hasUserName){
-                this.userName = hasUserName;
+                // this.userName = hasUserName;
+                this.$store.commit('changUserCount',hasUserName);
                 this.hasLogin = false;
+                this.getNums();
+            }else {
+                this.$store.commit('initListCounty',0);
             }
         }
     }
