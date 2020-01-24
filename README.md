@@ -1,14 +1,42 @@
-# MI-- 电子购买商城
-基于MongoDB + node.js + VUE 制作的网上商城
+<h1> MI-- 电子购买商城</h1>
+<i>基于MongoDB + node.js + VUE 制作的网上商城</i>
 
-server 为node.js服务器的expres
-启动命令： node bin/www 启动数据库以及服务端
+<p>
+  主要功能列表：
+  <ul>
+    <li>
+      商城列表
+    </li>
+      <li>
+      购物车
+    </li>
+      <li>
+      地址
+    </li>
+      <li>
+      结算订单以及登录模块
+    </li>
+</ul>
+</p>
 
-e-commerce 为vue框架
-启动命令:
-1.cd e-commerce
+<h3>技术栈</h3>
+前端：VUE全家桶、ES6
+后端：Express框架、MongoDb数据库
 
-2.npm run dev
+<h3>项目架构：</h3>
+<p>
+前端：
+
+  视图层【商品列表、购物车、地址列表、商品结算、订单成功】
+  底层【公共组件、VUE-Router、Axios、VUEX、Util】
+</p>
+<p>后端：Node.js Express</p>
+<p>数据库：MongoDB</p>
+<p>工具支持：vue-cli、webpack</p>
 
 
-现未打包完成，开发完成后，将提供具体解释分析
+<h3>项目启动</h3>
+
+<h5>服务器启动</h5>
+
+
