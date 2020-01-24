@@ -35,8 +35,12 @@
 <p>工具支持：vue-cli、webpack</p>
 
 
-<h3>项目启动</h3>
+<h3>服务器启动</h3>
 
-<h5>服务器启动</h5>
+<h5>服务器启动：cd /e-commerce/server/ node bin/www</h5>
+
+<h3>项目启动</h3>
+<h5>服务器启动：cd /e-commerce/ cnpn run dev</h5>
+
 
 
