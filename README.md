@@ -37,10 +37,10 @@
 
 <h3>服务器启动</h3>
 
-<h5>服务器启动：cd /e-commerce/server/ node bin/www</h5>
+<h5>服务器启动：1.cd /e-commerce/server/ 2.node bin/www</h5>
 
 <h3>项目启动</h3>
-<h5>服务器启动：cd /e-commerce/ cnpn run dev</h5>
+<h5>服务器启动：1.cd /e-commerce/ 2.cnpn run dev</h5>
 
 
 
