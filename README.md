@@ -42,5 +42,11 @@
 <h3>项目启动</h3>
 <h5>服务器启动：1.cd /e-commerce/ 2.cnpn run dev</h5>
 
+<h3>node 基础编程</h3>
+1.基于Chrome v8引擎 <br/>
+2.单线程 <br/>
+3.使用javascript 开发后端代码 <br/>
+4.非阻塞的IO <br/>
+
 
 
